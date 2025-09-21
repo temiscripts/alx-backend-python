@@ -233,7 +233,12 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Test GithubOrgClient.public_repos returns only repos with license apache-2.0
         """
         client = GithubOrgClient("google")
-        repos = client.public_repos(license="apache-2.0")
+        repos = client.public_repos(
+    license="apache-2.0"
+)
 
         # Check that only Apache 2.0 licensed repos are returned
-        self.assertListEqual(repos, self.apache2_repos)
+        self.assertEqual(
+    repos,
+    self.org_payload["repos_url"]
+)
