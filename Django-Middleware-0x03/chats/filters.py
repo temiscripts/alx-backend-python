@@ -3,11 +3,20 @@ from .models import Message
 
 
 class MessageFilter(django_filters.FilterSet):
-    from_this_time = django_filters.DateFilter(field_name="created_at", lookup_expr='gte')
-    to_this_time = django_filters.DateFilter(field_name="created_at", lookup_expr='lte')
-
-    sender = django_filters.CharFilter(field_name="sender", lookup_expr='icontains')
+    start_date = django_filters.DateTimeFilter(
+        field_name="sent_at", lookup_expr="gte"
+    )
+    end_date = django_filters.DateTimeFilter(
+        field_name="sent_at", lookup_expr="lte"
+    )
+    sender = django_filters.CharFilter(
+        field_name="sender__email", lookup_expr="icontains"
+    )
+    conversation = django_filters.UUIDFilter(
+        field_name="conversation__conversation_id"
+    )
 
     class Meta:
         model = Message
-        fields = ['sender', 'created_at']
+        fields = ["sender", "conversation", "start_date", "end_date"]
+

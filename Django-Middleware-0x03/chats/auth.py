@@ -1,2 +1,5 @@
-# Empty auth.py file
-# Will be filled in upcoming tasks
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+class CustomJWTAuthentication(JWTAuthentication):
+    pass
+

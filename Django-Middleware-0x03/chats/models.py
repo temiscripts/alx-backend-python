@@ -1,61 +1,53 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
+# Custom User Model
 
 class User(AbstractUser):
-    """
-    user model
-    """
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField(_('email address'), unique=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=100)
-    username = models.CharField(max_length=100, unique=True)
+    first_name = models.CharField(max_length=150, null=False)
+    last_name = models.CharField(max_length=150, null=False)
+    email = models.EmailField(unique=True, null=False)
+    password_hash = models.CharField(max_length=128, null=False)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+
+    ROLE_CHOICES = [
+        ('guest', 'Guest'),
+        ('host', 'Host'),
+        ('admin', 'Admin'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, null=False)
+    created_at = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'phone_number', 'username']
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     def __str__(self):
-        return f"{self.username}(email: '{self.email}', id: '{self.user_id}')"
-    
+        return self.email
+
+
+# Conversation Model
 
 class Conversation(models.Model):
-    """
-    Tracks which users are involved in a conversation
-    """
     conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     participants = models.ManyToManyField(User, related_name='conversations')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        participants_emails = ", ".join([p.email for p in self.participants.all()])
-        return f"Conversation {self.conversation_id} with: {participants_emails}"
-    
-    class Meta:
-        verbose_name = _("Conversation")
-        verbose_name_plural = _("Conversations")
-        ordering = ['-created_at']
+        return f"Conversation {self.conversation_id}"
 
+
+# Message Model
 
 class Message(models.Model):
-    """
-    message model
-    """
     message_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    message_body = models.TextField()
-    edited_at = models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
-
-    class Meta:
-        verbose_name = _("Message")
-        verbose_name_plural = _("Messages")
-        ordering = ['created_at']
+    message_body = models.TextField(null=False)
+    sent_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"Message from {self.sender.email} in {self.conversation.conversation_id} at {self.created_at.strftime('%Y-%m-%d %H:%M')}: {self.message_body[:50]}..."
-    
+        return f"Message {self.message_id} from {self.sender.email}"
+

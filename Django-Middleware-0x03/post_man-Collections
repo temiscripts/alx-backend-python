@@ -1,1 +1,23 @@
-https://.postman.co/workspace/My-Workspace~23bc3d8c-4f87-4097-8a95-d8087d6b9c19/collection/34803211-21081c0c-09d2-4044-863d-dfabc372e61e?action=share&creator=34803211
+{
+  "info": {
+    "name": "Messaging App API",
+    "_postman_id": "d1f9b74f-2e8a-4b76-90d1-123456789abc",
+    "description": "Postman collection for testing Messaging App API (Conversations, Messages, Auth)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "JWT Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"yourpassword\"\n}"
+        },
+        "url": { "raw": "http://127.0.0.1:8000/api/token/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "token", ""] }
+      }
+    }
+  ]
+}
+
